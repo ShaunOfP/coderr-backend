@@ -11,6 +11,10 @@ class ReviewListCreateView(ListCreateAPIView):
     serializer_class = ReviewSerializer
 
     def get_permissions(self):
+        """
+        Allows POSTing of a review only if the user is of type customer
+        and has not reviewed the business_user already
+        """
         if self.request.method == 'POST':
             return [IsCustomer(), HasNoReviewForThisBusinessUser()]
         return [IsAuthenticated()]

@@ -36,4 +36,5 @@ class HasNoReviewForThisBusinessUser(BasePermission):
 
 class IsReviewCreator(BasePermission):
     def has_object_permission(self, request, view, obj):
-        return
+        """Checks if the authenticated user is also the creator of the review"""
+        return request.user == obj.reviewer

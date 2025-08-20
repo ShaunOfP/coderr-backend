@@ -19,14 +19,12 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api/', include('userauth_app.api.urls')),
     path('api/profile/', include('profile_app.api.urls')),
     path('api/profiles/', include('profile_app.api.urls')),
     path('api/', include([
         path('', include('userauth_app.api.urls')),
         path('', include('offers_app.api.urls')),
     ])),
-    # path('api/offerdetails/', include('offers_app.api.urls')),
     # path('api/orders/', include('orders_app.api.urls')),
     # path('api/order-count/', include('orders_app.api.urls')),
     # path('api/completed-order-count/', include('orders_app.api.urls')),
