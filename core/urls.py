@@ -24,10 +24,8 @@ urlpatterns = [
     path('api/', include([
         path('', include('userauth_app.api.urls')),
         path('', include('offers_app.api.urls')),
+        path('', include('orders_app.api.urls'))
     ])),
-    # path('api/orders/', include('orders_app.api.urls')),
-    # path('api/order-count/', include('orders_app.api.urls')),
-    # path('api/completed-order-count/', include('orders_app.api.urls')),
     path('api/reviews/', include('reviews_app.api.urls')),
     # path('api/base-info/', include('baseinfo_app.api.urls')),
 ]
