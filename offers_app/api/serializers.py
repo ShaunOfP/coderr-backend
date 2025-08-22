@@ -20,7 +20,13 @@ class OfferSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'user']
 
     def create(self, validated_data):
+        """
+        Checks if Offer has at least 3 types of detail.
+        Calculates min_price and min_delivery_time and saves it to the Offer
+        """
         details_data = validated_data.pop("details", [])
+        if len(details_data) < 3:
+            raise serializers.ValidationError({'error': 'Offer must have at least 3 details'})
         offer = Offer.objects.create(**validated_data)
         for detail in details_data:
             OfferDetail.objects.create(offer=offer, **detail)
