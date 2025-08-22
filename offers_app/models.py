@@ -1,5 +1,7 @@
 from django.db import models
 
+from userauth_app.models import CustomUser
+
 
 class OfferDetail(models.Model):
     title = models.CharField(max_length=255)
@@ -13,6 +15,8 @@ class OfferDetail(models.Model):
 
 
 class Offer(models.Model):
+    creator = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name='offer_creator')
     title = models.CharField(max_length=255)
     image = models.FileField(
         upload_to='offer-pictures/', blank=True, null=True, default="")

@@ -3,18 +3,25 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 
 from offers_app.models import Offer
-from .serializers import OfferSerializer
+from .serializers import OfferCreateSerializer, OfferGetSerializer
 from .permissions import IsUserOfTypeBusiness
 
 
 class OfferListCreateView(ListCreateAPIView):
     queryset = Offer.objects.all()
-    serializer_class = OfferSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return OfferCreateSerializer
+        return OfferGetSerializer
 
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
         return [IsAuthenticated(), IsUserOfTypeBusiness()]
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
 
 
 class OfferDeleteUpdateDetailView(RetrieveUpdateDestroyAPIView):
