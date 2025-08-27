@@ -73,3 +73,29 @@ class OfferGetSerializer(serializers.ModelSerializer):
         model = Offer
         fields = ['id', 'user', 'title', 'image', 'description', 'created_at',
                   'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
+
+
+class DetailsLongHyperLinkedSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name='offer-detail',
+        lookup_field='pk'
+    )
+
+    class Meta:
+        model = OfferDetail
+        fields = ['id', 'url']
+        extra_kwargs = {
+            'url': {'view_name': 'offer-detail', 'lookup_field': 'pk'}
+        }
+
+
+class OfferSingleSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(source='creator', read_only=True)
+    details = DetailsLongHyperLinkedSerializer(
+        many=True, read_only=True
+    )
+
+    class Meta:
+        model = Offer
+        fields = ['id', 'user', 'title', 'image', 'description', 'created_at',
+                  'updated_at', 'details', 'min_price', 'min_delivery_time']
