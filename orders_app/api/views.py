@@ -2,6 +2,7 @@ from rest_framework.generics import ListCreateAPIView, DestroyAPIView, UpdateAPI
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
+from django.db.models import Q
 
 from orders_app.models import Order
 from .serializers import OrderCreateSerializer, OrderResponseSerializer
@@ -9,7 +10,8 @@ from .permissions import IsOfTypeCustomer
 
 
 class OrderListCreateView(ListCreateAPIView):
-    queryset = Order.objects.all()
+    def get_queryset(self):
+        return Order.objects.filter(Q(business_user=self.request.user) | Q(customer_user=self.request.user))
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
