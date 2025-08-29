@@ -99,3 +99,28 @@ class OfferSingleSerializer(serializers.ModelSerializer):
         model = Offer
         fields = ['id', 'user', 'title', 'image', 'description', 'created_at',
                   'updated_at', 'details', 'min_price', 'min_delivery_time']
+
+
+class OfferPatchSerializer(serializers.ModelSerializer):
+    details = OfferDetailSerializer(many=True)
+
+    class Meta:
+        model = Offer
+        fields = ['id', 'title', 'image', 'description', 'details']
+
+    def update(self, instance, validated_data):
+        details_data = validated_data.pop('details', [])
+
+        instance = super().update(instance, validated_data)
+
+        for detail_data in details_data:
+            offer_type = detail_data.get('offer_type')
+            try:
+                detail_instance = instance.details.get(offer_type=offer_type)
+            except OfferDetail.DoesNotExist:
+                raise serializers.ValidationError({'error': 'Invalid request data'})
+
+            for attr, value in detail_data.items():
+                setattr(detail_instance, attr, value)
+            detail_instance.save()
+        return instance

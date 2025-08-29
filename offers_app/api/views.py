@@ -3,8 +3,8 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 
-from offers_app.models import Offer
-from .serializers import OfferCreateSerializer, OfferGetSerializer, OfferSingleSerializer
+from offers_app.models import Offer, OfferDetail
+from .serializers import OfferCreateSerializer, OfferGetSerializer, OfferSingleSerializer, OfferPatchSerializer, OfferDetailSerializer
 from .permissions import IsUserOfTypeBusiness, IsOfferCreator
 from .pagination import ResultSetPagination
 
@@ -55,7 +55,11 @@ class OfferListCreateView(ListCreateAPIView):
 
 class OfferDeleteUpdateDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Offer.objects.all()
-    serializer_class = OfferSingleSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return OfferSingleSerializer
+        return OfferPatchSerializer
 
     def get_permissions(self):
         if self.request.method == 'GET':
@@ -64,6 +68,6 @@ class OfferDeleteUpdateDetailView(RetrieveUpdateDestroyAPIView):
 
 
 class OfferDetailsDetailView(RetrieveAPIView):
-    queryset = Offer.objects.all()
-    # serializer_class =
-    permission_classes = []
+    queryset = OfferDetail.objects.all()
+    serializer_class = OfferDetailSerializer
+    permission_classes = [IsAuthenticated]
