@@ -1,12 +1,12 @@
 from rest_framework.generics import ListCreateAPIView, DestroyAPIView, UpdateAPIView, RetrieveAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 from rest_framework.response import Response
 from django.db.models import Q
 
 from orders_app.models import Order
 from .serializers import OrderCreateSerializer, OrderResponseSerializer
-from .permissions import IsOfTypeCustomer
+from .permissions import IsOfTypeCustomer, IsOfTypeBusiness
 
 
 class OrderListCreateView(ListCreateAPIView):
@@ -35,7 +35,13 @@ class OrderListCreateView(ListCreateAPIView):
 
 
 class OrderUpdateDeleteView(DestroyAPIView, UpdateAPIView):
-    pass
+    queryset = Order.objects.all()
+    serializer_class = OrderResponseSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'DELETE':
+            return [IsAuthenticated(), IsAdminUser()]
+        return [IsAuthenticated(), IsOfTypeBusiness()]
 
 
 class OrderCountDetailView(RetrieveAPIView):

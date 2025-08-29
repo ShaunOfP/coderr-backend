@@ -1,10 +1,15 @@
 from django.db import models
 
 from userauth_app.models import CustomUser
-from offers_app.models import Offer
 
 
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+
     customer_user = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name='order_customer')
     business_user = models.ForeignKey(
@@ -15,6 +20,7 @@ class Order(models.Model):
     price = models.PositiveIntegerField()
     features = models.JSONField()
     offer_type = models.CharField(max_length=255)
-    status = models.CharField(max_length=255, default='in_progress')
+    status = models.CharField(
+        max_length=255, choices=STATUS_CHOICES, default='in_progress')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
