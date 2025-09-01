@@ -3,10 +3,13 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 from rest_framework.response import Response
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import NotFound
 
 from orders_app.models import Order
-from .serializers import OrderCreateSerializer, OrderResponseSerializer
+from .serializers import OrderCreateSerializer, OrderResponseSerializer, OrderCountSerializer, CompletedOrderCountSerializer
 from .permissions import IsOfTypeCustomer, IsOfTypeBusiness
+from userauth_app.models import CustomUser
 
 
 class OrderListCreateView(ListCreateAPIView):
@@ -44,9 +47,19 @@ class OrderUpdateDeleteView(DestroyAPIView, UpdateAPIView):
         return [IsAuthenticated(), IsOfTypeBusiness()]
 
 
-class OrderCountDetailView(RetrieveAPIView):
-    pass
+class OrderCountView(RetrieveAPIView):
+    serializer_class = OrderCountSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        business_pk = self.kwargs.get('pk')
+        return CustomUser.objects.filter(pk=business_pk, type='business')
 
 
 class OrderCompleteCountView(RetrieveAPIView):
-    pass
+    serializer_class = CompletedOrderCountSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        business_pk = self.kwargs.get('pk')
+        return CustomUser.objects.filter(pk=business_pk, type='business')

@@ -47,3 +47,25 @@ class OrderResponseSerializer(serializers.ModelSerializer):
                   "price", "features", "offer_type", "status", "created_at", "updated_at"]
         read_only_fields = ["id", "customer_user", "business_user", "title", "revisions", "delivery_time_in_days",
                             "price", "features", "offer_type", "created_at", "updated_at"]
+
+
+class OrderCountSerializer(serializers.ModelSerializer):
+    order_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = ['order_count']
+
+    def get_order_count(self, obj):
+        return Order.objects.filter(business_user=obj, status='in_progress').count()
+
+
+class CompletedOrderCountSerializer(serializers.ModelSerializer):
+    completed_order_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = ['completed_order_count']
+
+    def get_completed_order_count(self, obj):
+        return Order.objects.filter(business_user=obj, status='completed').count()
