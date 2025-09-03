@@ -54,20 +54,24 @@ class OfferListCreateView(ListCreateAPIView):
 
 
 class OfferDeleteUpdateDetailView(RetrieveUpdateDestroyAPIView):
+    """The view for the DELETE and PATCH-Method and to GET a single Offer"""
     queryset = Offer.objects.all()
 
     def get_serializer_class(self):
+        """Uses different serializers for different HTTP-Methods"""
         if self.request.method == 'GET':
             return OfferSingleSerializer
         return OfferPatchSerializer
 
     def get_permissions(self):
+        """Uses different Permissions for different HTTP-Methods"""
         if self.request.method == 'GET':
             return [IsAuthenticated()]
         return [IsAuthenticated(), IsOfferCreator()]
 
 
 class OfferDetailsDetailView(RetrieveAPIView):
+    """The view for the /api/offerdetails/{id}/ endpoint"""
     queryset = OfferDetail.objects.all()
     serializer_class = OfferDetailSerializer
     permission_classes = [IsAuthenticated]

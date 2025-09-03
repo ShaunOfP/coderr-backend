@@ -5,6 +5,7 @@ from userauth_app.models import CustomUser
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    """Serializes the fields for the endpoint /api/registration/"""
     repeated_password = serializers.CharField(write_only=True)
     type = serializers.CharField()
 
@@ -19,7 +20,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
         }
 
     def save(self):
-        """checks if passwords match and if mail is already in use. Sets the account details and saves afterwards"""
+        """
+        Checks if passwords match and if mail is already in use.
+        Validates if the type is correct.
+        Sets the account details and saves afterwards.
+        """
         pw = self.validated_data['password']
         repeated_pw = self.validated_data['repeated_password']
 
@@ -30,7 +35,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if CustomUser.objects.filter(email=self.validated_data['email']).exists():
             raise serializers.ValidationError(
                 {'error': 'Email already exists'})
-        
+
         if self.validated_data['type'] not in ["business", "customer"]:
             raise serializers.ValidationError(
                 {'error': 'Viable options for type are business or customer'})
@@ -43,6 +48,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class CustomAuthTokenSerializer(serializers.Serializer):
+    """Serializes the fields for the endpoint /api/login/"""
     username = serializers.CharField()
     password = serializers.CharField(style={'input_type': 'password'})
 

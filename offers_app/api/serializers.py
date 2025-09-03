@@ -6,6 +6,7 @@ from userauth_app.models import CustomUser
 
 
 class OfferDetailSerializer(serializers.ModelSerializer):
+    """Serializes the fields for the /api/offerdetails/ endpoint"""
     class Meta:
         model = OfferDetail
         fields = ['id', 'title', 'revisions',
@@ -14,6 +15,10 @@ class OfferDetailSerializer(serializers.ModelSerializer):
 
 
 class OfferCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializes the fields for the POST-Method on the endpoint /api/offers/
+    Modifies the create function
+    """
     details = OfferDetailSerializer(many=True)
 
     class Meta:
@@ -49,6 +54,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
 
 
 class DetailsHyperLinkedSerializer(serializers.HyperlinkedModelSerializer):
+    """Serializes the HyperLinked url in a shortened form"""
     url = serializers.SerializerMethodField()
 
     class Meta:
@@ -59,11 +65,13 @@ class DetailsHyperLinkedSerializer(serializers.HyperlinkedModelSerializer):
         }
 
     def get_url(self, obj):
+        """Removes /api from the Hyperlink to create a short form"""
         url = reverse('offer-detail', kwargs={'pk': obj.pk})
         return url.replace('/api', '')
 
 
 class OfferGetSerializer(serializers.ModelSerializer):
+    """Serializes the fields for the /api/offers/ endpoint when using the GET-Method"""
     user = serializers.PrimaryKeyRelatedField(source='creator', read_only=True)
     details = DetailsHyperLinkedSerializer(
         many=True, read_only=True)
@@ -76,6 +84,7 @@ class OfferGetSerializer(serializers.ModelSerializer):
 
 
 class DetailsLongHyperLinkedSerializer(serializers.HyperlinkedModelSerializer):
+    """Serializes the HyperLinked url for the OfferDetails"""
     url = serializers.HyperlinkedIdentityField(
         view_name='offer-detail',
         lookup_field='pk'
@@ -90,6 +99,7 @@ class DetailsLongHyperLinkedSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class OfferSingleSerializer(serializers.ModelSerializer):
+    """Serializes the fields for the /api/offers/{id}/ endpoint"""
     user = serializers.PrimaryKeyRelatedField(source='creator', read_only=True)
     details = DetailsLongHyperLinkedSerializer(
         many=True, read_only=True
@@ -102,6 +112,7 @@ class OfferSingleSerializer(serializers.ModelSerializer):
 
 
 class OfferPatchSerializer(serializers.ModelSerializer):
+    """Serializes the fields for the /api/offers/{id}/ endpoint when using the PATCH-Method"""
     details = OfferDetailSerializer(many=True)
 
     class Meta:
@@ -109,6 +120,7 @@ class OfferPatchSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image', 'description', 'details']
 
     def update(self, instance, validated_data):
+        """Makes sure that the validated_data['details'] are patched at the correct spot"""
         details_data = validated_data.pop('details', [])
 
         instance = super().update(instance, validated_data)
@@ -118,7 +130,8 @@ class OfferPatchSerializer(serializers.ModelSerializer):
             try:
                 detail_instance = instance.details.get(offer_type=offer_type)
             except OfferDetail.DoesNotExist:
-                raise serializers.ValidationError({'error': 'Invalid request data'})
+                raise serializers.ValidationError(
+                    {'error': 'Invalid request data'})
 
             for attr, value in detail_data.items():
                 setattr(detail_instance, attr, value)

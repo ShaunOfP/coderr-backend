@@ -16,6 +16,6 @@ class CustomUser(AbstractUser):
     description = models.TextField(max_length=255, blank=True, default="")
     working_hours = models.CharField(max_length=255, blank=True, default="")
     type = models.CharField(
-        max_length=20, choices=USER_TYPES, default='customer')
+        max_length=20, choices=USER_TYPES)
     created_at = models.DateTimeField(auto_now_add=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)

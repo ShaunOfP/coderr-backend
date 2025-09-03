@@ -5,6 +5,7 @@ from offers_app.models import OfferDetail
 
 
 class OrderCreateSerializer(serializers.ModelSerializer):
+    """Serializes the fields for the /api/orders/ endpoint when using the POST-Method"""
     offer_detail_id = serializers.IntegerField(write_only=True)
 
     class Meta:
@@ -14,6 +15,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         write_only_fields = ['offer_detail_id']
 
     def create(self, validated_data):
+        """Validates if a user is of type business and assigns the matching offer data to the order"""
         request = self.context['request']
         customer_user = request.user
 
@@ -41,6 +43,10 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
 
 class OrderResponseSerializer(serializers.ModelSerializer):
+    """
+    Serializes the fields for the endpoint /api/orders/ when using the GET-Method 
+    and for the endpoint /api/orders/{id}/ when using DELETE or PATCH
+    """
     class Meta:
         model = Order
         fields = ["id", "customer_user", "business_user", "title", "revisions", "delivery_time_in_days",
@@ -50,6 +56,7 @@ class OrderResponseSerializer(serializers.ModelSerializer):
 
 
 class OrderCountSerializer(serializers.ModelSerializer):
+    """Serializes the field for the /api/order-count/{business_user_id}/ endpoint"""
     order_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -57,10 +64,12 @@ class OrderCountSerializer(serializers.ModelSerializer):
         fields = ['order_count']
 
     def get_order_count(self, obj):
+        """Retrieves the count of orders for the given business user"""
         return Order.objects.filter(business_user=obj, status='in_progress').count()
 
 
 class CompletedOrderCountSerializer(serializers.ModelSerializer):
+    """Serializes the field for the /api/completed-order-count/{business_user_id}/ endpoint"""
     completed_order_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -68,4 +77,5 @@ class CompletedOrderCountSerializer(serializers.ModelSerializer):
         fields = ['completed_order_count']
 
     def get_completed_order_count(self, obj):
+        """Retrieves the count of completed orders for the given business user"""
         return Order.objects.filter(business_user=obj, status='completed').count()
