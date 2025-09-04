@@ -4,11 +4,10 @@ from reviews_app.models import Review
 
 
 class IsCustomer(BasePermission):
-    """This checks if a user is of type customer or not and if hes authenticated."""
+    """This checks if a user is of type customer or not"""
 
     def has_permission(self, request, view):
-        return (request.user.type == 'customer'
-                and request.user.is_authenticated)
+        return request.user.type == 'customer'
 
 
 class IsReviewCreator(BasePermission):

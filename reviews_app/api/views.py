@@ -27,7 +27,7 @@ class ReviewListCreateView(ListCreateAPIView):
         and has not reviewed the business_user already
         """
         if self.request.method == 'POST':
-            return [IsCustomer()]
+            return [IsAuthenticated(), IsCustomer()]
         return [IsAuthenticated()]
 
 
