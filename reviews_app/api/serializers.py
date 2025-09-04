@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ParseError
 
 from reviews_app.models import Review
 
@@ -22,10 +23,20 @@ class ReviewSerializer(serializers.ModelSerializer):
         """
         Checks if the given business_user is of type business. Raises error if not.
         Assigns the authenticated user as reviewer when creating a new review.
+        Also checks if the customer has posted a review for the business user, if yes returns an error.
         """
         if validated_data['business_user'].type != 'business':
             raise serializers.ValidationError(
                 {'error': 'Selected user is not a business user'})
 
-        validated_data['reviewer'] = self.context['request'].user
-        return super().create(validated_data)
+        reviewer = self.context['request'].user
+        business_user = validated_data['business_user']
+
+        if Review.objects.filter(reviewer=reviewer, business_user=business_user).exists():
+            raise ParseError()
+
+        review = Review.objects.create(
+            reviewer=reviewer,
+            **validated_data
+        )
+        return review

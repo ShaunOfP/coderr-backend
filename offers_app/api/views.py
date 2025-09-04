@@ -37,7 +37,7 @@ class OfferListCreateView(ListCreateAPIView):
             'max_delivery_time', None)
         if max_delivery_time_param is not None:
             if type(max_delivery_time_param) is not int:
-                raise ParseError
+                raise ParseError()
             queryset = queryset.filter(
                 min_delivery_time__lte=max_delivery_time_param)
         return queryset

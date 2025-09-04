@@ -5,7 +5,7 @@ from rest_framework import filters
 
 from reviews_app.models import Review
 from .serializers import ReviewSerializer
-from .permissions import IsCustomer, IsReviewCreator, HasNoReviewForThisBusinessUser
+from .permissions import IsCustomer, IsReviewCreator
 
 
 class ReviewListCreateView(ListCreateAPIView):
@@ -27,7 +27,7 @@ class ReviewListCreateView(ListCreateAPIView):
         and has not reviewed the business_user already
         """
         if self.request.method == 'POST':
-            return [IsCustomer(), HasNoReviewForThisBusinessUser()]
+            return [IsCustomer()]
         return [IsAuthenticated()]
 
 
