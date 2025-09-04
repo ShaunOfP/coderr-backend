@@ -2,6 +2,7 @@ from rest_framework import filters
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Q
 
 from offers_app.models import Offer, OfferDetail
 from .serializers import OfferCreateSerializer, OfferGetSerializer, OfferSingleSerializer, OfferPatchSerializer, OfferDetailSerializer
@@ -27,8 +28,10 @@ class OfferListCreateView(ListCreateAPIView):
         queryset = Offer.objects.all()
         search_param = self.request.query_params.get('search', None)
         if search_param is not None:
-            queryset = queryset.filter(title__icontains=search_param,
-                                       description__icontains=search_param)
+            queryset = queryset.filter(
+                Q(title__icontains=search_param) |
+                Q(description__icontains=search_param)
+            )
         max_delivery_time_param = self.request.query_params.get(
             'max_delivery_time', None)
         if max_delivery_time_param is not None:
