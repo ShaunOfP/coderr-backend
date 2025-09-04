@@ -26,8 +26,18 @@ pip install -r requirements.txt
 
 Then start a virtual environment and start the Backend:
 ```bash
+#Windows
 #Start the virutal environment
 .\env\Scripts\Activate
+
+#Start the backend
+python manage.py runserver
+```
+
+```bash
+#Unix
+#Start the virtual environment
+source .env/bin/activate
 
 #Start the backend
 python manage.py runserver
