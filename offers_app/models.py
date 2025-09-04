@@ -5,7 +5,7 @@ from userauth_app.models import CustomUser
 
 class OfferDetail(models.Model):
     title = models.CharField(max_length=255)
-    revisions = models.PositiveIntegerField(default=0)
+    revisions = models.PositiveIntegerField()
     delivery_time_in_days = models.PositiveIntegerField(default=0)
     price = models.FloatField()
     features = models.JSONField()
