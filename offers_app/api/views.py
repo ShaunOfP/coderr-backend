@@ -36,10 +36,12 @@ class OfferListCreateView(ListCreateAPIView):
         max_delivery_time_param = self.request.query_params.get(
             'max_delivery_time', None)
         if max_delivery_time_param is not None:
-            if type(max_delivery_time_param) is not int:
-                raise ParseError()
+            try:
+                max_delivery_time = int(max_delivery_time_param)
+            except ValueError:
+                raise ParseError(detail='max_delivery_time must be an integer')
             queryset = queryset.filter(
-                min_delivery_time__lte=max_delivery_time_param)
+                min_delivery_time__lte=max_delivery_time)
         return queryset
 
     def get_serializer_class(self):
