@@ -9,7 +9,10 @@ class IsOfTypeCustomer(BasePermission):
 
 
 class IsOfTypeBusiness(BasePermission):
-    """Returns a boolean based on if the currently authenticated user is of type business"""
-
-    def has_permission(self, request, view):
+    """
+    Returns a boolean based on if the currently authenticated user is of type business
+    If the object doesnt exist returns a 404
+    """
+    
+    def has_object_permission(self, request, view, obj):
         return request.user.type == 'business'
