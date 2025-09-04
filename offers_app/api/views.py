@@ -3,6 +3,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
+from rest_framework.exceptions import ParseError
 
 from offers_app.models import Offer, OfferDetail
 from .serializers import OfferCreateSerializer, OfferGetSerializer, OfferSingleSerializer, OfferPatchSerializer, OfferDetailSerializer
@@ -35,6 +36,8 @@ class OfferListCreateView(ListCreateAPIView):
         max_delivery_time_param = self.request.query_params.get(
             'max_delivery_time', None)
         if max_delivery_time_param is not None:
+            if type(max_delivery_time_param) is not int:
+                raise ParseError
             queryset = queryset.filter(
                 min_delivery_time__lte=max_delivery_time_param)
         return queryset
