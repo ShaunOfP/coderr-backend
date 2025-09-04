@@ -9,6 +9,7 @@ from reviews_app.models import Review
 
 class BaseInfoView(APIView):
     """The view for the base-info endpoint"""
+    permission_classes = []
 
     def get(self, request, *args, **kwargs):
         """Retrieves the given info points from the database when the endpoint is called and returns the info as a response"""
