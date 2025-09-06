@@ -24,6 +24,11 @@ Use the package manager [pip](https://pypi.org/project/pip/#files) to install th
 pip install -r requirements.txt
 ```
 
+Create a virtual environtment in the project folder
+```bash
+python -m venv env
+```
+
 Then start a virtual environment and start the Backend:
 ```bash
 #Windows
