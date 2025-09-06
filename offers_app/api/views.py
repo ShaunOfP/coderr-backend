@@ -16,7 +16,7 @@ class OfferListCreateView(ListCreateAPIView):
     A customizable view to GET and POST Offers.
     """
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ['creator_id', 'min_price']
+    filterset_fields = ['creator_id']
     ordering_fields = ['updated_at', 'min_price']
     ordering = ['updated_at', 'min_price']
     pagination_class = ResultSetPagination
@@ -42,6 +42,13 @@ class OfferListCreateView(ListCreateAPIView):
                 raise ParseError(detail='max_delivery_time must be an integer')
             queryset = queryset.filter(
                 min_delivery_time__lte=max_delivery_time)
+        min_price_param = self.request.query_params.get('min_price', None)
+        if min_price_param is not None:
+            try:
+                min_price = float(min_price_param)
+            except ValueError:
+                raise ParseError(detail='min_price must be a float')
+            queryset = queryset.filter(min_price__gte=min_price)
         return queryset
 
     def get_serializer_class(self):
